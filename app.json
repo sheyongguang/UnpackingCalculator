@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#2D5A27",
+    "navigationBarTitleText": "商品",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F7F4EF",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

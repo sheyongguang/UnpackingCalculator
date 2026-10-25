@@ -1,0 +1,26 @@
+page {
+  --green-deep: #2D5A27;
+  --green-mid: #4A7C3F;
+  --green-light: #7BAF6B;
+  --cream: #F7F4EF;
+  --warm-amber: #E8A838;
+  --warm-orange: #F0A060;
+  --text-dark: #2C2416;
+  --text-mid: #5C4A2E;
+  --text-light: #8B7355;
+  --white: #FFFFFF;
+  --card-bg: #FDFBF7;
+  --border: #E8E0D0;
+  --shadow-sm: 0 2rpx 12rpx rgba(45, 90, 39, 0.06);
+  --shadow-md: 0 4rpx 24rpx rgba(45, 90, 39, 0.10);
+  --shadow-lg: 0 8rpx 40rpx rgba(45, 90, 39, 0.14);
+  --radius-sm: 12rpx;
+  --radius-md: 20rpx;
+  --radius-lg: 28rpx;
+
+  background-color: var(--cream);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  color: var(--text-dark);
+  font-size: 28rpx;
+  line-height: 1.6;
+}

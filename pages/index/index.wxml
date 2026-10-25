@@ -1,0 +1,157 @@
+<view class="page">
+  <!-- 头部（紧凑一行） -->
+  <view class="header">
+    <image class="header-icon-img" src="/static/icon.png" mode="aspectFill"></image>
+    <view class="header-title">重新包装计算器</view>
+  </view>
+
+  <!-- 包装方式选择 -->
+  <view class="card mode-card">
+    <view class="card-title">
+      <text class="title-icon">📦</text>
+      <text>选择重新包装方式</text>
+    </view>
+    <view class="mode-options">
+      <view
+        class="mode-option {{currentMode === '4to3' ? 'mode-active' : ''}}"
+        bindtap="switchMode"
+        data-mode="4to3"
+      >
+        <view class="mode-badge">4 → 3</view>
+        <view class="mode-desc">4颗分3份</view>
+      </view>
+      <view
+        class="mode-option {{currentMode === '3to2' ? 'mode-active' : ''}}"
+        bindtap="switchMode"
+        data-mode="3to2"
+      >
+        <view class="mode-badge">3 → 2</view>
+        <view class="mode-desc">3颗分2份</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 原始信息输入区 -->
+  <view class="card input-card">
+    <view class="card-title">
+      <text class="title-icon">📋</text>
+      <text>{{currentMode === '4to3' ? '4颗' : '3颗'}}原始信息</text>
+    </view>
+    <view class="input-group">
+      <view class="input-row">
+        <text class="input-label">{{currentMode === '4to3' ? '4颗每斤单价' : '3颗每斤单价'}}</text>
+        <view class="input-wrapper">
+          <input
+            class="input-field"
+            type="digit"
+            placeholder="请输入单价"
+            value="{{pricePerJin}}"
+            bindinput="onPricePerJinInput"
+            placeholder-class="placeholder"
+          />
+          <text class="input-unit">元/斤</text>
+        </view>
+      </view>
+      <view class="input-row">
+        <text class="input-label">{{currentMode === '4to3' ? '4颗总重量' : '3颗总重量'}}</text>
+        <view class="input-wrapper">
+          <input
+            class="input-field"
+            type="digit"
+            placeholder="请输入总重量"
+            value="{{totalWeight}}"
+            bindinput="onTotalWeightInput"
+            placeholder-class="placeholder"
+          />
+          <text class="input-unit">斤</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 总价结果显示（同行） -->
+    <view class="result-banner" wx:if="{{totalPrice > 0}}">
+      <text class="result-label">{{currentMode === '4to3' ? '4颗总价格' : '3颗总价格'}}</text>
+      <text class="result-number">¥{{totalPriceDisplay}}</text>
+      <text class="result-formula">= {{totalWeightDisplay}}斤 × ¥{{pricePerJinDisplay}}/斤</text>
+    </view>
+  </view>
+
+  <!-- 重包装信息输入区 -->
+  <view class="card repack-card" wx:if="{{totalPrice > 0}}">
+    <view class="card-title repack-title">
+      <text class="title-icon">⚖️</text>
+      <text>重包装每份重量</text>
+      <view class="title-right" wx:if="{{repackTotalWeight > 0}}">
+        <text class="title-total-label">总重量</text>
+        <text class="title-total-value">{{repackTotalWeightDisplay}}斤</text>
+      </view>
+    </view>
+
+    <block wx:for="{{weightList}}" wx:key="index">
+      <view class="input-row repack-row">
+        <text class="input-label">第{{index + 1}}份重量</text>
+        <view class="input-wrapper">
+          <input
+            class="input-field"
+            type="digit"
+            placeholder="请输入"
+            value="{{item.weight}}"
+            bindinput="onWeightInput"
+            data-index="{{index}}"
+            placeholder-class="placeholder"
+          />
+          <text class="input-unit">斤</text>
+        </view>
+        <text class="repack-price" wx:if="{{item.price > 0}}">¥{{item.priceDisplay}}</text>
+      </view>
+    </block>
+
+    <!-- 汇总结果区 -->
+    <view class="summary-section" wx:if="{{repackTotalWeight > 0}}">
+      <view class="summary-divider"></view>
+      <view class="summary-row highlight">
+        <text class="summary-label">重包装后单价</text>
+        <text class="summary-value unit-price">¥{{repackUnitPriceDisplay}}<text class="per-jin">/斤</text></text>
+      </view>
+      <view class="summary-note">
+        基于总价 ¥{{totalPriceDisplay}} ÷ {{repackTotalWeightDisplay}}斤
+      </view>
+    </view>
+
+    <!-- 重新计算按钮 -->
+    <view class="recalc-btn-wrap" wx:if="{{repackTotalWeight > 0}}">
+      <button class="recalc-btn" bindtap="recalculate">🔄 重新计算</button>
+    </view>
+  </view>
+
+  <!-- 底部提示 -->
+  <view class="footer-note">
+    <text>💡 总售价保持不变，仅根据新重量重新分配单价</text>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="card history-card" wx:if="{{historyList.length > 0}}">
+    <view class="card-title">
+      <text class="title-icon">📝</text>
+      <text>计算历史</text>
+      <view class="title-right">
+        <text class="history-clear" bindtap="clearHistory">清空</text>
+      </view>
+    </view>
+    <block wx:for="{{historyList}}" wx:key="time">
+      <view class="history-item">
+        <view class="history-top">
+          <text class="history-mode">{{item.modeLabel}}</text>
+          <text class="history-time">{{item.time}}</text>
+        </view>
+        <view class="history-body">
+          <text class="history-text">总价 ¥{{item.totalPrice}} = {{item.totalWeight}}斤 × ¥{{item.pricePerJin}}/斤</text>
+          <text class="history-text">重包装后：{{item.repackWeight}}斤 | 单价 ¥{{item.unitPrice}}/斤</text>
+          <view class="history-portions" wx:if="{{item.portions.length > 0}}">
+            <text class="portion-item" wx:for="{{item.portions}}" wx:for-item="p" wx:key="idx">第{{p.idx}}份：{{p.weight}}斤 ¥{{p.price}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>
